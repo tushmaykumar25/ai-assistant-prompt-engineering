@@ -1,0 +1,1200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NovaMind AI Assistant — Prompt Engineering Project</title>
+  <meta name="description" content="A web-based AI Assistant built for the Prompt Engineering major project. Demonstrates factual Q&A, text summarization, creative writing, and smart advice using Gemini AI." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg-primary:    #0a0b14;
+      --bg-secondary:  #0f1020;
+      --bg-card:       rgba(255,255,255,0.04);
+      --bg-card-hover: rgba(255,255,255,0.07);
+      --border:        rgba(255,255,255,0.08);
+      --border-glow:   rgba(139,92,246,0.4);
+
+      --purple-1: #8b5cf6;
+      --purple-2: #6d28d9;
+      --cyan-1:   #22d3ee;
+      --cyan-2:   #0891b2;
+      --pink-1:   #ec4899;
+      --green-1:  #10b981;
+      --amber-1:  #f59e0b;
+      --red-1:    #ef4444;
+
+      --gradient-main:     linear-gradient(135deg, #8b5cf6, #22d3ee);
+      --gradient-card:     linear-gradient(135deg, rgba(139,92,246,.15), rgba(34,211,238,.08));
+
+      --text-primary:   #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted:     #475569;
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+
+      --shadow-glow:   0 0 40px rgba(139,92,246,0.2);
+      --shadow-card:   0 8px 32px rgba(0,0,0,0.4);
+      --shadow-button: 0 4px 20px rgba(139,92,246,0.35);
+
+      --transition: 0.25s cubic-bezier(0.4,0,0.2,1);
+      --transition-slow: 0.45s cubic-bezier(0.4,0,0.2,1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(139,92,246,.03) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(139,92,246,.03) 1px, transparent 1px);
+      background-size: 48px 48px;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      pointer-events: none;
+      z-index: 0;
+      animation: float 8s ease-in-out infinite;
+    }
+    .blob-1 { width: 500px; height: 500px; background: rgba(139,92,246,.12); top: -100px; left: -100px; }
+    .blob-2 { width: 400px; height: 400px; background: rgba(34,211,238,.08); bottom: -100px; right: -100px; animation-delay: -4s; }
+    .blob-3 { width: 300px; height: 300px; background: rgba(236,72,153,.07); top: 40%; left: 50%; transform: translateX(-50%); animation-delay: -2s; }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(-30px) scale(1.05); }
+    }
+
+    .app-wrapper { position: relative; z-index: 1; }
+
+    /* HEADER */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 32px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(10,11,20,0.85);
+      backdrop-filter: blur(20px);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .logo-area { display: flex; align-items: center; gap: 12px; }
+
+    .logo-img {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      object-fit: cover;
+      border: 1px solid var(--border-glow);
+      box-shadow: 0 0 16px rgba(139,92,246,0.3);
+    }
+
+    .logo-text {
+      font-family: 'Space Grotesk', sans-serif;
+      font-weight: 700;
+      font-size: 1.4rem;
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .header-badge {
+      font-size: 0.65rem;
+      font-weight: 600;
+      color: var(--purple-1);
+      background: rgba(139,92,246,0.15);
+      border: 1px solid rgba(139,92,246,0.3);
+      border-radius: 20px;
+      padding: 2px 10px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .header-nav { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .nav-btn {
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Inter', sans-serif;
+    }
+    .nav-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); border-color: var(--border-glow); }
+    .nav-btn.active { background: rgba(139,92,246,0.2); color: var(--purple-1); border-color: rgba(139,92,246,0.4); }
+
+    /* API BANNER */
+    #api-banner {
+      background: linear-gradient(135deg, rgba(139,92,246,.12), rgba(34,211,238,.08));
+      border-bottom: 1px solid rgba(139,92,246,.2);
+      padding: 14px 32px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    #api-banner .banner-icon { font-size: 1.2rem; }
+    #api-banner .banner-text { color: var(--text-secondary); font-size: 0.875rem; }
+    #api-banner .banner-text strong { color: var(--text-primary); }
+
+    #api-key-input {
+      flex: 1;
+      min-width: 240px;
+      padding: 9px 14px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      color: var(--text-primary);
+      font-size: 0.85rem;
+      font-family: 'Inter', sans-serif;
+      outline: none;
+      transition: var(--transition);
+    }
+    #api-key-input:focus { border-color: var(--purple-1); box-shadow: 0 0 0 3px rgba(139,92,246,.15); }
+    #api-key-input::placeholder { color: var(--text-muted); }
+
+    #save-key-btn {
+      padding: 9px 20px;
+      background: var(--gradient-main);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: white;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Inter', sans-serif;
+    }
+    #save-key-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+    .key-status {
+      font-size: 0.8rem;
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+    .key-status.set   { background: rgba(16,185,129,.15); color: #10b981; border: 1px solid rgba(16,185,129,.3); }
+    .key-status.unset { background: rgba(239,68,68,.1); color: #ef4444; border: 1px solid rgba(239,68,68,.2); }
+
+    /* SECTIONS */
+    .section { display: none; padding: 40px 32px 60px; max-width: 1200px; margin: 0 auto; }
+    .section.active { display: block; }
+
+    /* HERO */
+    .hero-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.6rem;
+      font-weight: 700;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+    .hero-title span {
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-subtitle { color: var(--text-secondary); font-size: 1rem; margin-bottom: 40px; max-width: 600px; }
+
+    /* FUNCTION GRID */
+    .function-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+    }
+
+    .fn-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 24px 20px;
+      cursor: pointer;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    .fn-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      transition: var(--transition);
+    }
+    .fn-card[data-fn="qa"]::before       { background: linear-gradient(135deg, #8b5cf6, #a78bfa); }
+    .fn-card[data-fn="summary"]::before  { background: linear-gradient(135deg, #22d3ee, #06b6d4); }
+    .fn-card[data-fn="creative"]::before { background: linear-gradient(135deg, #ec4899, #f43f5e); }
+    .fn-card[data-fn="advice"]::before   { background: linear-gradient(135deg, #10b981, #059669); }
+    .fn-card:hover::before, .fn-card.active::before { opacity: 0.08; }
+    .fn-card:hover { border-color: rgba(255,255,255,.15); transform: translateY(-4px); box-shadow: var(--shadow-card); }
+    .fn-card.active { border-color: var(--border-glow); box-shadow: var(--shadow-glow); }
+
+    .fn-icon {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem;
+      margin-bottom: 14px;
+    }
+    .fn-card[data-fn="qa"] .fn-icon       { background: linear-gradient(135deg,rgba(139,92,246,.25),rgba(167,139,250,.1)); }
+    .fn-card[data-fn="summary"] .fn-icon  { background: linear-gradient(135deg,rgba(34,211,238,.25),rgba(6,182,212,.1)); }
+    .fn-card[data-fn="creative"] .fn-icon { background: linear-gradient(135deg,rgba(236,72,153,.25),rgba(244,63,94,.1)); }
+    .fn-card[data-fn="advice"] .fn-icon   { background: linear-gradient(135deg,rgba(16,185,129,.25),rgba(5,150,105,.1)); }
+
+    .fn-name { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1rem; margin-bottom: 6px; }
+    .fn-desc { color: var(--text-secondary); font-size: 0.82rem; line-height: 1.5; }
+
+    .fn-badge {
+      position: absolute; top: 14px; right: 14px;
+      font-size: 0.65rem; font-weight: 600;
+      padding: 3px 9px; border-radius: 20px;
+      background: rgba(255,255,255,0.07);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    /* INTERACTION PANEL */
+    #interaction-panel {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      display: none;
+      animation: slideUp 0.35s ease both;
+    }
+    #interaction-panel.visible { display: block; }
+
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .panel-header { display: flex; align-items: center; gap: 12px; margin-bottom: 24px; }
+    .panel-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; background: var(--bg-card-hover); }
+    .panel-title { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1.15rem; }
+    .panel-subtitle { color: var(--text-secondary); font-size: 0.8rem; margin-top: 2px; }
+
+    .prompt-section { margin-bottom: 22px; }
+
+    .section-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .prompt-styles { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    .style-chip {
+      padding: 7px 16px;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Inter', sans-serif;
+    }
+    .style-chip:hover { border-color: rgba(255,255,255,.2); color: var(--text-primary); background: var(--bg-card-hover); }
+    .style-chip.active { background: rgba(139,92,246,.2); color: var(--purple-1); border-color: rgba(139,92,246,.5); }
+
+    .prompt-preview {
+      margin-top: 10px;
+      padding: 12px 16px;
+      background: rgba(0,0,0,0.3);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--purple-1);
+      border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      font-style: italic;
+      line-height: 1.6;
+      transition: var(--transition);
+    }
+
+    .input-area { position: relative; margin-bottom: 18px; }
+
+    textarea#user-input {
+      width: 100%;
+      min-height: 120px;
+      padding: 16px;
+      background: rgba(0,0,0,0.35);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 0.92rem;
+      font-family: 'Inter', sans-serif;
+      resize: vertical;
+      outline: none;
+      transition: var(--transition);
+      line-height: 1.6;
+    }
+    textarea#user-input:focus { border-color: var(--purple-1); box-shadow: 0 0 0 3px rgba(139,92,246,.12); }
+    textarea#user-input::placeholder { color: var(--text-muted); }
+
+    .char-count { position: absolute; bottom: 10px; right: 14px; font-size: 0.72rem; color: var(--text-muted); }
+
+    .actions-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+    #send-btn {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 28px;
+      background: var(--gradient-main);
+      border: none;
+      border-radius: var(--radius-md);
+      color: white;
+      font-size: 0.92rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Inter', sans-serif;
+      box-shadow: var(--shadow-button);
+    }
+    #send-btn:hover { opacity: 0.88; transform: translateY(-2px); box-shadow: 0 8px 30px rgba(139,92,246,.45); }
+    #send-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .clear-btn {
+      padding: 12px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-secondary);
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Inter', sans-serif;
+    }
+    .clear-btn:hover { border-color: rgba(239,68,68,.4); color: var(--red-1); background: rgba(239,68,68,.05); }
+
+    /* RESPONSE */
+    #response-area { margin-top: 28px; display: none; animation: slideUp 0.35s ease both; }
+    #response-area.visible { display: block; }
+
+    .response-card {
+      background: linear-gradient(135deg, rgba(139,92,246,.06), rgba(34,211,238,.04));
+      border: 1px solid rgba(139,92,246,.2);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+    }
+
+    .response-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .response-meta { display: flex; align-items: center; gap: 10px; }
+
+    .ai-avatar {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: var(--gradient-main);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+    }
+
+    .ai-label { font-weight: 600; font-size: 0.88rem; }
+    .response-time { font-size: 0.72rem; color: var(--text-muted); }
+    .response-actions { display: flex; gap: 8px; }
+
+    .action-icon-btn {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+      transition: var(--transition);
+    }
+    .action-icon-btn:hover { background: var(--bg-card-hover); color: var(--text-primary); }
+
+    #response-text {
+      color: var(--text-primary);
+      font-size: 0.92rem;
+      line-height: 1.8;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .typing-cursor::after {
+      content: 'I';
+      animation: blink 0.8s step-end infinite;
+      color: var(--purple-1);
+      font-weight: 100;
+    }
+    @keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: 0; } }
+
+    .loading-dots { display: flex; gap: 6px; align-items: center; padding: 8px 0; }
+    .loading-dots span {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--purple-1);
+      animation: bounce 1.2s ease-in-out infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: .2s; background: var(--cyan-1); }
+    .loading-dots span:nth-child(3) { animation-delay: .4s; background: var(--pink-1); }
+    @keyframes bounce { 0%,80%,100% { transform: scale(0.7); opacity: 0.5; } 40% { transform: scale(1); opacity: 1; } }
+
+    /* FEEDBACK */
+    .feedback-row {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      margin-top: 20px; padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+    .feedback-label { font-size: 0.82rem; color: var(--text-secondary); }
+
+    .feedback-btn {
+      display: flex; align-items: center; gap: 6px;
+      padding: 7px 16px;
+      border-radius: 30px;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: var(--transition);
+      font-family: 'Inter', sans-serif;
+    }
+    .feedback-btn.thumbs-up:hover  { border-color: rgba(16,185,129,.5); color: var(--green-1); background: rgba(16,185,129,.08); }
+    .feedback-btn.thumbs-down:hover{ border-color: rgba(239,68,68,.5);  color: var(--red-1);   background: rgba(239,68,68,.06); }
+    .feedback-btn.selected.thumbs-up   { border-color: var(--green-1); color: var(--green-1); background: rgba(16,185,129,.12); }
+    .feedback-btn.selected.thumbs-down { border-color: var(--red-1);   color: var(--red-1);   background: rgba(239,68,68,.1); }
+
+    .feedback-message { font-size: 0.78rem; display: none; animation: fadeIn .3s ease; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* HISTORY */
+    .history-list { display: flex; flex-direction: column; gap: 14px; }
+
+    .history-item {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      cursor: default;
+      transition: var(--transition);
+    }
+    .history-item:hover { border-color: rgba(255,255,255,.14); background: var(--bg-card-hover); transform: translateX(4px); }
+    .history-item-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; flex-wrap: wrap; }
+
+    .history-badge {
+      font-size: 0.65rem; font-weight: 600;
+      padding: 3px 9px; border-radius: 20px;
+      text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .history-badge.qa       { background: rgba(139,92,246,.15); color: var(--purple-1); }
+    .history-badge.summary  { background: rgba(34,211,238,.12); color: var(--cyan-1); }
+    .history-badge.creative { background: rgba(236,72,153,.12); color: var(--pink-1); }
+    .history-badge.advice   { background: rgba(16,185,129,.12); color: var(--green-1); }
+
+    .history-time { font-size: 0.72rem; color: var(--text-muted); margin-left: auto; }
+    .history-query { font-size: 0.88rem; color: var(--text-primary); font-weight: 500; margin-bottom: 6px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .history-response { font-size: 0.78rem; color: var(--text-secondary); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    .empty-history { text-align: center; padding: 60px 20px; color: var(--text-muted); }
+    .empty-history .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.4; }
+    .empty-history p { font-size: 0.88rem; }
+
+    /* GUIDE */
+    .guide-hero {
+      text-align: center; margin-bottom: 48px;
+      padding: 48px 24px;
+      border-radius: var(--radius-xl);
+      background: var(--gradient-card);
+      border: 1px solid var(--border);
+      position: relative; overflow: hidden;
+    }
+    .guide-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(139,92,246,.15) 0%, transparent 70%);
+    }
+    .guide-hero > * { position: relative; z-index: 1; }
+    .guide-hero-icon { font-size: 3.5rem; margin-bottom: 16px; }
+    .guide-hero h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem; font-weight: 700;
+      margin-bottom: 10px;
+      background: var(--gradient-main);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .guide-hero p { color: var(--text-secondary); max-width: 520px; margin: 0 auto; font-size: 0.95rem; }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px; margin-bottom: 40px;
+    }
+
+    .guide-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      transition: var(--transition);
+    }
+    .guide-card:hover { border-color: rgba(255,255,255,.12); transform: translateY(-3px); box-shadow: var(--shadow-card); }
+    .guide-card-icon { font-size: 2rem; margin-bottom: 14px; }
+    .guide-card h3 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 1.05rem; margin-bottom: 10px; }
+    .guide-card p { color: var(--text-secondary); font-size: 0.85rem; line-height: 1.7; }
+    .guide-card ul { list-style: none; margin-top: 12px; }
+    .guide-card ul li {
+      display: flex; align-items: flex-start; gap: 8px;
+      color: var(--text-secondary); font-size: 0.83rem; margin-bottom: 8px; line-height: 1.5;
+    }
+    .guide-card ul li::before { content: 'to'; color: var(--purple-1); font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+
+    .prompt-showcase {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 32px;
+    }
+    .showcase-header {
+      padding: 18px 24px; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    }
+    .showcase-header h3 { font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.95rem; }
+    .showcase-header p { color: var(--text-secondary); font-size: 0.78rem; margin-left: auto; }
+
+    .prompt-table { width: 100%; border-collapse: collapse; }
+    .prompt-table th, .prompt-table td {
+      padding: 14px 20px; text-align: left;
+      border-bottom: 1px solid var(--border); font-size: 0.83rem;
+    }
+    .prompt-table th {
+      color: var(--text-muted); font-weight: 600;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      font-size: 0.72rem; background: rgba(0,0,0,0.2);
+    }
+    .prompt-table tr:last-child td { border-bottom: none; }
+    .prompt-table tr:hover td { background: rgba(255,255,255,.02); }
+    .prompt-table td:first-child { font-weight: 500; }
+    .style-tag {
+      display: inline-block; padding: 2px 8px; border-radius: 20px;
+      font-size: 0.7rem; font-weight: 600;
+      background: rgba(139,92,246,.15); color: var(--purple-1);
+    }
+
+    /* STATS BAR */
+    .stats-bar { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 32px; }
+    .stat-pill {
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: var(--radius-md); padding: 14px 20px;
+      display: flex; align-items: center; gap: 12px;
+      flex: 1; min-width: 130px;
+    }
+    .stat-icon { font-size: 1.4rem; }
+    .stat-num { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.4rem; }
+    .stat-lbl { color: var(--text-muted); font-size: 0.75rem; margin-top: 1px; }
+
+    /* TOAST */
+    #toast {
+      position: fixed; bottom: 30px; right: 30px; z-index: 999;
+      padding: 12px 20px;
+      background: rgba(15,16,32,0.95);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      color: var(--text-primary);
+      font-size: 0.875rem;
+      box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+      transform: translateY(100px); opacity: 0;
+      transition: var(--transition-slow);
+      max-width: 320px;
+    }
+    #toast.show { transform: translateY(0); opacity: 1; }
+
+    .divider { height: 1px; background: var(--border); margin: 32px 0; }
+
+    @media (max-width: 640px) {
+      header { padding: 14px 18px; }
+      .section { padding: 24px 18px 48px; }
+      .hero-title { font-size: 1.8rem; }
+      #interaction-panel { padding: 20px; }
+      .function-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="blob blob-1" aria-hidden="true"></div>
+<div class="blob blob-2" aria-hidden="true"></div>
+<div class="blob blob-3" aria-hidden="true"></div>
+
+<div class="app-wrapper">
+
+  <header>
+    <div class="logo-area">
+      <img src="ai_logo.png" alt="NovaMind Logo" class="logo-img" onerror="this.style.display='none'" />
+      <div>
+        <div class="logo-text">NovaMind AI</div>
+      </div>
+      <span class="header-badge">Prompt Engineering Project</span>
+    </div>
+    <nav class="header-nav" role="navigation" aria-label="Main navigation">
+      <button class="nav-btn active" id="nav-assistant" onclick="showSection('assistant')">🤖 Assistant</button>
+      <button class="nav-btn" id="nav-history" onclick="showSection('history')">📋 History</button>
+      <button class="nav-btn" id="nav-guide" onclick="showSection('guide')">📖 User Guide</button>
+    </nav>
+  </header>
+
+  <div id="api-banner">
+    <span class="banner-icon">🔑</span>
+    <span class="banner-text"><strong>Gemini API Key Required:</strong> Get one free at aistudio.google.com</span>
+    <input type="password" id="api-key-input" placeholder="Paste your Gemini API key (AIza...)" aria-label="Gemini API Key" />
+    <button id="save-key-btn" onclick="saveApiKey()">Save Key</button>
+    <span id="key-status" class="key-status unset">Not Set</span>
+  </div>
+
+  <!-- ASSISTANT -->
+  <section id="section-assistant" class="section active" aria-label="AI Assistant">
+    <h1 class="hero-title">Your <span>AI Assistant</span></h1>
+    <p class="hero-subtitle">Choose a function, pick a prompt style, type your input, and let NovaMind AI do the rest. Press Ctrl+Enter to send.</p>
+
+    <div class="stats-bar" role="region" aria-label="Session statistics">
+      <div class="stat-pill"><span class="stat-icon">💬</span><div><div class="stat-num" id="stat-queries">0</div><div class="stat-lbl">Queries</div></div></div>
+      <div class="stat-pill"><span class="stat-icon">✅</span><div><div class="stat-num" id="stat-helpful">0</div><div class="stat-lbl">Helpful</div></div></div>
+      <div class="stat-pill"><span class="stat-icon">⚡</span><div><div class="stat-num">4</div><div class="stat-lbl">Functions</div></div></div>
+      <div class="stat-pill"><span class="stat-icon">🎨</span><div><div class="stat-num">12</div><div class="stat-lbl">Prompt Styles</div></div></div>
+    </div>
+
+    <div class="section-label">Select a Function</div>
+    <div class="function-grid" role="group" aria-label="AI Functions">
+      <div class="fn-card" data-fn="qa" id="fn-qa" onclick="selectFunction('qa')" role="button" tabindex="0" aria-label="Factual Q&amp;A">
+        <span class="fn-badge">3 prompts</span>
+        <div class="fn-icon">🔍</div>
+        <div class="fn-name">Factual Q&amp;A</div>
+        <div class="fn-desc">Ask any question and get a clear, accurate answer with examples.</div>
+      </div>
+      <div class="fn-card" data-fn="summary" id="fn-summary" onclick="selectFunction('summary')" role="button" tabindex="0" aria-label="Text Summarizer">
+        <span class="fn-badge">3 prompts</span>
+        <div class="fn-icon">📄</div>
+        <div class="fn-name">Text Summarizer</div>
+        <div class="fn-desc">Paste any article or text and get a concise, structured summary.</div>
+      </div>
+      <div class="fn-card" data-fn="creative" id="fn-creative" onclick="selectFunction('creative')" role="button" tabindex="0" aria-label="Creative Writer">
+        <span class="fn-badge">3 prompts</span>
+        <div class="fn-icon">✍️</div>
+        <div class="fn-name">Creative Writer</div>
+        <div class="fn-desc">Generate original stories, poems, or essays on any topic.</div>
+      </div>
+      <div class="fn-card" data-fn="advice" id="fn-advice" onclick="selectFunction('advice')" role="button" tabindex="0" aria-label="Smart Advisor">
+        <span class="fn-badge">3 prompts</span>
+        <div class="fn-icon">💡</div>
+        <div class="fn-name">Smart Advisor</div>
+        <div class="fn-desc">Get structured, actionable advice on any topic or challenge.</div>
+      </div>
+    </div>
+
+    <div id="interaction-panel">
+      <div class="panel-header">
+        <div class="panel-icon" id="panel-icon">🔍</div>
+        <div>
+          <div class="panel-title" id="panel-title">Factual Q&amp;A</div>
+          <div class="panel-subtitle" id="panel-subtitle">Ask any factual question</div>
+        </div>
+      </div>
+
+      <div class="prompt-section">
+        <div class="section-label">Prompt Style</div>
+        <div class="prompt-styles" id="prompt-styles" role="radiogroup" aria-label="Prompt style selector"></div>
+        <div class="prompt-preview" id="prompt-preview">Select a prompt style above to preview how it shapes the AI's response.</div>
+      </div>
+
+      <div class="input-area">
+        <textarea id="user-input" placeholder="Type your question or text here..." maxlength="3000" oninput="updateCharCount()" aria-label="User input" onkeydown="handleKeydown(event)"></textarea>
+        <span class="char-count"><span id="char-count">0</span> / 3000</span>
+      </div>
+
+      <div class="actions-row">
+        <button id="send-btn" onclick="sendQuery()" aria-label="Generate AI response">
+          <span>✨</span> Generate Response
+        </button>
+        <button class="clear-btn" onclick="clearInput()" aria-label="Clear input">Clear</button>
+      </div>
+
+      <div id="response-area">
+        <div class="response-card">
+          <div class="response-header">
+            <div class="response-meta">
+              <div class="ai-avatar">🤖</div>
+              <div>
+                <div class="ai-label">NovaMind AI</div>
+                <div class="response-time" id="response-time">just now</div>
+              </div>
+            </div>
+            <div class="response-actions">
+              <button class="action-icon-btn" onclick="copyResponse()" title="Copy response" aria-label="Copy response">📋</button>
+              <button class="action-icon-btn" onclick="speakResponse()" title="Read aloud" aria-label="Read aloud">🔊</button>
+            </div>
+          </div>
+
+          <div id="response-text" aria-live="polite" aria-atomic="true"></div>
+
+          <div class="feedback-row">
+            <span class="feedback-label">Was this helpful?</span>
+            <button class="feedback-btn thumbs-up" id="thumb-up" onclick="giveFeedback(true)" aria-label="Mark as helpful">👍 Yes</button>
+            <button class="feedback-btn thumbs-down" id="thumb-down" onclick="giveFeedback(false)" aria-label="Mark as not helpful">👎 No</button>
+            <span class="feedback-message" id="feedback-msg"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section id="section-history" class="section" aria-label="Query History">
+    <h2 class="hero-title" style="font-size:2rem">Query <span>History</span></h2>
+    <p class="hero-subtitle" style="margin-bottom:28px">All queries and responses from this session.</p>
+    <div id="history-list" class="history-list"></div>
+  </section>
+
+  <!-- GUIDE -->
+  <section id="section-guide" class="section" aria-label="User Guide">
+    <div class="guide-hero">
+      <div class="guide-hero-icon">📖</div>
+      <h2>NovaMind AI — User Guide</h2>
+      <p>Everything you need to know to use this AI Assistant and understand how prompt design shapes AI responses.</p>
+    </div>
+
+    <div class="section-label">Quick Start Steps</div>
+    <div class="guide-grid">
+      <div class="guide-card"><div class="guide-card-icon">🔑</div><h3>Step 1 — Enter API Key</h3><p>Paste your free Gemini API key in the banner at the top. Get one at <strong>aistudio.google.com</strong>. Your key is only stored in memory and never sent anywhere except Google's API.</p></div>
+      <div class="guide-card"><div class="guide-card-icon">🎛️</div><h3>Step 2 — Pick a Function</h3><p>Choose one of the 4 AI functions: <strong>Factual Q&amp;A</strong>, <strong>Text Summarizer</strong>, <strong>Creative Writer</strong>, or <strong>Smart Advisor</strong>.</p></div>
+      <div class="guide-card"><div class="guide-card-icon">🎨</div><h3>Step 3 — Choose Prompt Style</h3><p>Each function offers 3 prompt styles — Simple, Detailed, or Expert — which change how the AI structures and depth of its response.</p></div>
+      <div class="guide-card"><div class="guide-card-icon">✍️</div><h3>Step 4 — Type Your Input</h3><p>Enter your question or text in the input box. Press <strong>Ctrl+Enter</strong> or click "Generate Response" to run it.</p></div>
+      <div class="guide-card"><div class="guide-card-icon">👍</div><h3>Step 5 — Give Feedback</h3><p>Rate every response as helpful (👍) or not helpful (👎). Your feedback is tracked in the session stats to compare prompt effectiveness.</p></div>
+      <div class="guide-card"><div class="guide-card-icon">📋</div><h3>Step 6 — Review History</h3><p>Visit the <strong>History</strong> tab anytime to review all your queries, responses, and feedback from the current session.</p></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-label">Functions Explained</div>
+    <div class="guide-grid">
+      <div class="guide-card">
+        <div class="guide-card-icon">🔍</div><h3>Factual Q&amp;A</h3>
+        <p>Ask any question and receive a factual, informative answer.</p>
+        <ul>
+          <li>Scientific, historical, geography questions</li>
+          <li>Technology and concept explanations</li>
+          <li>General knowledge topics</li>
+        </ul>
+      </div>
+      <div class="guide-card">
+        <div class="guide-card-icon">📄</div><h3>Text Summarizer</h3>
+        <p>Paste any long article, paragraph, or document to get a concise summary.</p>
+        <ul>
+          <li>Summarize news articles or blog posts</li>
+          <li>Condense research papers or essays</li>
+          <li>Generate bullet-point overviews</li>
+        </ul>
+      </div>
+      <div class="guide-card">
+        <div class="guide-card-icon">✍️</div><h3>Creative Writer</h3>
+        <p>Generate original creative content on any theme or topic.</p>
+        <ul>
+          <li>Short stories and flash fiction</li>
+          <li>Poems in various styles</li>
+          <li>Persuasive or narrative essays</li>
+        </ul>
+      </div>
+      <div class="guide-card">
+        <div class="guide-card-icon">💡</div><h3>Smart Advisor</h3>
+        <p>Receive structured advice and actionable tips on life, career, or study.</p>
+        <ul>
+          <li>Study and productivity strategies</li>
+          <li>Career and professional advice</li>
+          <li>Health, wellness, and lifestyle guidance</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section-label">Prompt Design — How Styles Differ</div>
+    <div class="prompt-showcase">
+      <div class="showcase-header">
+        <span style="font-size:1.2rem">📝</span>
+        <h3>All 12 Prompt Styles at a Glance</h3>
+        <p>4 functions × 3 styles = 12 unique prompts</p>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="prompt-table">
+          <thead>
+            <tr>
+              <th>Function</th><th>Style</th><th>Characteristics</th><th>Best For</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>🔍 Q&amp;A</td><td><span class="style-tag">Simple</span></td><td>Short, direct prompt. Minimal context given to AI.</td><td>Quick answers, beginners</td></tr>
+            <tr><td>🔍 Q&amp;A</td><td><span class="style-tag">Detailed</span></td><td>Structured prompt requesting explanation with examples and context.</td><td>Deep understanding</td></tr>
+            <tr><td>🔍 Q&amp;A</td><td><span class="style-tag">Expert</span></td><td>Academic-level prompt requesting nuanced, multi-perspective analysis.</td><td>Research, professionals</td></tr>
+            <tr><td>📄 Summary</td><td><span class="style-tag">Simple</span></td><td>Brief 2–3 sentence summary in plain language.</td><td>Quick overviews</td></tr>
+            <tr><td>📄 Summary</td><td><span class="style-tag">Detailed</span></td><td>Structured summary with key points and a key takeaway.</td><td>Reports and notes</td></tr>
+            <tr><td>📄 Summary</td><td><span class="style-tag">Expert</span></td><td>Critical analysis covering thesis, evidence, assumptions, and implications.</td><td>Academic analysis</td></tr>
+            <tr><td>✍️ Creative</td><td><span class="style-tag">Simple</span></td><td>Open-ended, gives the AI full creative freedom.</td><td>Fun and exploration</td></tr>
+            <tr><td>✍️ Creative</td><td><span class="style-tag">Detailed</span></td><td>Specifies tone, mood, structure, and word count target.</td><td>Structured storytelling</td></tr>
+            <tr><td>✍️ Creative</td><td><span class="style-tag">Expert</span></td><td>Requests literary techniques, character depth, and thematic complexity.</td><td>High-quality writing</td></tr>
+            <tr><td>💡 Advice</td><td><span class="style-tag">Simple</span></td><td>Casual, friendly tips in plain everyday language.</td><td>Everyday guidance</td></tr>
+            <tr><td>💡 Advice</td><td><span class="style-tag">Detailed</span></td><td>Step-by-step plan with numbered recommendations and caveats.</td><td>Actionable plans</td></tr>
+            <tr><td>💡 Advice</td><td><span class="style-tag">Expert</span></td><td>Evidence-based, considers trade-offs, multiple perspectives, best practices.</td><td>Professional decisions</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="guide-card" style="max-width:580px">
+      <div class="guide-card-icon">🔄</div>
+      <h3>About the Feedback Loop</h3>
+      <p>After every response, you can rate it with 👍 (helpful) or 👎 (not helpful). Session totals are shown in the stats bar. Visit the History tab to see each query's feedback status and compare which prompt styles performed best.</p>
+    </div>
+  </section>
+
+</div>
+
+<div id="toast" role="alert" aria-live="polite"></div>
+
+<script>
+var STATE = {
+  apiKey: '',
+  currentFn: null,
+  currentStyle: 0,
+  history: [],
+  stats: { queries: 0, helpful: 0 },
+  currentResponse: '',
+  speaking: false
+};
+
+var FUNCTIONS = {
+  qa: {
+    icon: '🔍', name: 'Factual Q&A', subtitle: 'Ask any factual question',
+    placeholder: 'Type your question here... (e.g., "What is the speed of light?")',
+    styles: [
+      { label: 'Simple',   desc: 'Short and direct. Good for quick answers.',
+        build: function(q) { return 'Answer this question clearly and concisely:\n\n' + q; } },
+      { label: 'Detailed', desc: 'Structured explanation with examples and context.',
+        build: function(q) { return 'Please provide a comprehensive answer to the following question. Include a clear explanation, relevant examples, and any important context.\n\nQuestion: ' + q + '\n\nFormat your response with:\n1. Direct answer\n2. Detailed explanation\n3. Relevant example(s)'; } },
+      { label: 'Expert',   desc: 'Academic-level analysis with multiple perspectives.',
+        build: function(q) { return 'You are a knowledgeable expert. Provide a thorough, academic-level response to the following question. Discuss multiple perspectives, include nuanced analysis, address common misconceptions, and reference key concepts.\n\nQuestion: ' + q + '\n\nDemonstrate depth of knowledge and insight in your response.'; } }
+    ]
+  },
+  summary: {
+    icon: '📄', name: 'Text Summarizer', subtitle: 'Paste any text or article to summarize',
+    placeholder: 'Paste the text you want to summarize here...',
+    styles: [
+      { label: 'Simple',   desc: 'Short 2–3 sentence plain-language summary.',
+        build: function(t) { return 'Summarize the following text in 2 to 3 simple sentences:\n\n' + t; } },
+      { label: 'Detailed', desc: 'Structured key points and one key takeaway.',
+        build: function(t) { return 'Provide a structured summary of the following text:\n- Main topic in one sentence\n- 4 to 6 key points as bullet points\n- One key takeaway\n\nText:\n' + t; } },
+      { label: 'Expert',   desc: 'Critical analysis covering thesis and implications.',
+        build: function(t) { return 'Critically analyze and summarize the following text. Cover:\n1. Central argument or thesis\n2. Key evidence or supporting points\n3. Assumptions made by the author\n4. Implications or significance\n5. Any limitations or gaps\n\nText:\n' + t; } }
+    ]
+  },
+  creative: {
+    icon: '✍️', name: 'Creative Writer', subtitle: 'Generate stories, poems, or essays',
+    placeholder: 'Describe what to create (e.g., "a short story about a time traveler who visits ancient Rome")...',
+    styles: [
+      { label: 'Simple',   desc: 'Free-form. Let the AI be fully creative.',
+        build: function(t) { return 'Write a short creative piece about: ' + t; } },
+      { label: 'Detailed', desc: 'Specified tone, mood, and structure.',
+        build: function(t) { return 'Write a creative piece about the following topic:\n- Topic: ' + t + '\n- Tone: Engaging and vivid\n- Include a clear beginning, middle, and end\n- Use descriptive language and sensory imagery\n- Target length: 150 to 250 words'; } },
+      { label: 'Expert',   desc: 'Literary craft: techniques, depth, and themes.',
+        build: function(t) { return 'Write a high-quality literary piece on the following theme. Employ literary devices such as metaphor, imagery, foreshadowing, and symbolism. Develop nuanced characters (if applicable), build tension or emotional resonance, and ensure a clear thematic statement.\n\nTheme or Topic: ' + t + '\n\nTarget length: 200 to 350 words. Prioritize craft and literary excellence.'; } }
+    ]
+  },
+  advice: {
+    icon: '💡', name: 'Smart Advisor', subtitle: 'Get actionable advice on any topic',
+    placeholder: 'What topic do you need advice on? (e.g., "how to study effectively for exams")...',
+    styles: [
+      { label: 'Simple',   desc: 'Casual, friendly tips in everyday language.',
+        build: function(t) { return 'Give me some helpful tips about: ' + t; } },
+      { label: 'Detailed', desc: 'Step-by-step plan with reasoning and caveats.',
+        build: function(t) { return 'Provide detailed, actionable advice on the following topic:\n1. Brief overview of why this matters\n2. Step-by-step recommendations (at least 5 steps)\n3. Common mistakes to avoid\n4. One key summary tip\n\nTopic: ' + t; } },
+      { label: 'Expert',   desc: 'Evidence-based, considers trade-offs and context.',
+        build: function(t) { return 'As an expert advisor, provide comprehensive, evidence-based guidance on the following topic. Consider multiple perspectives and approaches, relevant trade-offs and context-dependent factors, research-backed or well-established best practices, potential challenges and how to navigate them, and tailored recommendations for different scenarios.\n\nTopic: ' + t; } }
+    ]
+  }
+};
+
+function showSection(name) {
+  document.querySelectorAll('.section').forEach(function(s) { s.classList.remove('active'); });
+  document.querySelectorAll('.nav-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.getElementById('section-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  if (name === 'history') renderHistory();
+}
+
+function saveApiKey() {
+  var val = document.getElementById('api-key-input').value.trim();
+  if (!val) { showToast('Please enter an API key'); return; }
+  STATE.apiKey = val;
+  var el = document.getElementById('key-status');
+  el.textContent = 'Key Saved';
+  el.className = 'key-status set';
+  showToast('API key saved successfully!');
+}
+
+function selectFunction(fn) {
+  STATE.currentFn = fn;
+  STATE.currentStyle = 0;
+  document.querySelectorAll('.fn-card').forEach(function(c) { c.classList.remove('active'); });
+  document.getElementById('fn-' + fn).classList.add('active');
+  var cfg = FUNCTIONS[fn];
+  document.getElementById('panel-icon').textContent = cfg.icon;
+  document.getElementById('panel-title').textContent = cfg.name;
+  document.getElementById('panel-subtitle').textContent = cfg.subtitle;
+  document.getElementById('user-input').placeholder = cfg.placeholder;
+
+  var stylesEl = document.getElementById('prompt-styles');
+  stylesEl.innerHTML = '';
+  cfg.styles.forEach(function(s, i) {
+    var btn = document.createElement('button');
+    btn.className = 'style-chip' + (i === 0 ? ' active' : '');
+    btn.textContent = (i + 1) + '. ' + s.label + ' — ' + s.desc;
+    btn.setAttribute('role', 'radio');
+    btn.setAttribute('aria-checked', i === 0 ? 'true' : 'false');
+    btn.setAttribute('aria-label', 'Prompt style: ' + s.label);
+    (function(idx) { btn.onclick = function() { selectStyle(idx); }; })(i);
+    stylesEl.appendChild(btn);
+  });
+  updatePromptPreview();
+
+  var panel = document.getElementById('interaction-panel');
+  panel.classList.add('visible');
+  hideResponse();
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function selectStyle(idx) {
+  STATE.currentStyle = idx;
+  var chips = document.querySelectorAll('.style-chip');
+  chips.forEach(function(c, i) {
+    c.classList.toggle('active', i === idx);
+    c.setAttribute('aria-checked', i === idx ? 'true' : 'false');
+  });
+  updatePromptPreview();
+}
+
+function updatePromptPreview() {
+  if (!STATE.currentFn) return;
+  var style = FUNCTIONS[STATE.currentFn].styles[STATE.currentStyle];
+  var preview = style.build('[your input here]');
+  document.getElementById('prompt-preview').textContent = preview;
+}
+
+function handleKeydown(e) {
+  if (e.key === 'Enter' && e.ctrlKey) { e.preventDefault(); sendQuery(); }
+}
+
+function updateCharCount() {
+  var len = document.getElementById('user-input').value.length;
+  document.getElementById('char-count').textContent = len;
+}
+
+async function sendQuery() {
+  if (!STATE.currentFn) { showToast('Please select a function first!'); return; }
+  if (!STATE.apiKey) { showToast('Please save your Gemini API key first!'); return; }
+  var userText = document.getElementById('user-input').value.trim();
+  if (!userText) { showToast('Please enter some text!'); return; }
+
+  var style = FUNCTIONS[STATE.currentFn].styles[STATE.currentStyle];
+  var prompt = style.build(userText);
+
+  showResponse();
+  document.getElementById('response-text').innerHTML = '<div class="loading-dots"><span></span><span></span><span></span></div>';
+  document.getElementById('send-btn').disabled = true;
+  document.getElementById('thumb-up').classList.remove('selected');
+  document.getElementById('thumb-down').classList.remove('selected');
+  document.getElementById('feedback-msg').style.display = 'none';
+
+  try {
+    var res = await fetch(
+      'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=' + STATE.apiKey,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: { temperature: 0.8, maxOutputTokens: 1024 }
+        })
+      }
+    );
+    if (!res.ok) {
+      var errData = await res.json();
+      throw new Error(errData.error ? errData.error.message : 'HTTP ' + res.status);
+    }
+    var data = await res.json();
+    var text = (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0] && data.candidates[0].content.parts[0].text)
+      ? data.candidates[0].content.parts[0].text : 'No response generated.';
+
+    await typeText(text);
+    STATE.currentResponse = text;
+    document.getElementById('response-time').textContent = new Date().toLocaleTimeString();
+
+    var entry = {
+      id: Date.now(), fn: STATE.currentFn, style: style.label,
+      query: userText, response: text, feedback: null,
+      time: new Date().toLocaleTimeString()
+    };
+    STATE.history.unshift(entry);
+    STATE.stats.queries++;
+    updateStats();
+
+  } catch(err) {
+    document.getElementById('response-text').textContent = 'Error: ' + err.message + '\n\nPlease check your API key and try again.';
+  }
+  document.getElementById('send-btn').disabled = false;
+}
+
+async function typeText(text) {
+  var el = document.getElementById('response-text');
+  el.textContent = '';
+  el.classList.add('typing-cursor');
+  var words = text.split(' ');
+  for (var i = 0; i < words.length; i++) {
+    el.textContent += (i > 0 ? ' ' : '') + words[i];
+    if (i % 6 === 0) await new Promise(function(r) { setTimeout(r, 12); });
+  }
+  el.classList.remove('typing-cursor');
+}
+
+function showResponse() { document.getElementById('response-area').classList.add('visible'); }
+function hideResponse() { document.getElementById('response-area').classList.remove('visible'); }
+
+function clearInput() {
+  document.getElementById('user-input').value = '';
+  updateCharCount();
+  hideResponse();
+}
+
+function copyResponse() {
+  if (!STATE.currentResponse) return;
+  navigator.clipboard.writeText(STATE.currentResponse)
+    .then(function() { showToast('Response copied to clipboard!'); })
+    .catch(function() { showToast('Could not copy — try manually selecting text.'); });
+}
+
+function speakResponse() {
+  if (!STATE.currentResponse) return;
+  if (STATE.speaking) { window.speechSynthesis.cancel(); STATE.speaking = false; return; }
+  var utt = new SpeechSynthesisUtterance(STATE.currentResponse);
+  utt.onend = function() { STATE.speaking = false; };
+  STATE.speaking = true;
+  window.speechSynthesis.speak(utt);
+  showToast('Reading response aloud...');
+}
+
+function giveFeedback(isHelpful) {
+  var upBtn = document.getElementById('thumb-up');
+  var downBtn = document.getElementById('thumb-down');
+  var msg = document.getElementById('feedback-msg');
+  upBtn.classList.remove('selected');
+  downBtn.classList.remove('selected');
+  if (isHelpful) {
+    upBtn.classList.add('selected');
+    STATE.stats.helpful++;
+    msg.textContent = 'Thank you! Glad it was helpful.';
+    msg.style.color = 'var(--green-1)';
+  } else {
+    downBtn.classList.add('selected');
+    msg.textContent = 'Noted! Try a different prompt style for better results.';
+    msg.style.color = 'var(--amber-1)';
+  }
+  msg.style.display = 'inline';
+  updateStats();
+  if (STATE.history.length > 0) STATE.history[0].feedback = isHelpful;
+}
+
+function updateStats() {
+  document.getElementById('stat-queries').textContent = STATE.stats.queries;
+  document.getElementById('stat-helpful').textContent = STATE.stats.helpful;
+}
+
+function renderHistory() {
+  var el = document.getElementById('history-list');
+  if (STATE.history.length === 0) {
+    el.innerHTML = '<div class="empty-history"><div class="empty-icon">🕐</div><p>No queries yet. Use the Assistant tab to get started.</p></div>';
+    return;
+  }
+  el.innerHTML = STATE.history.map(function(h) {
+    var fb = h.feedback === true ? ' 👍' : h.feedback === false ? ' 👎' : '';
+    return '<div class="history-item" role="article">'
+      + '<div class="history-item-header">'
+      + '<span class="history-badge ' + h.fn + '">' + FUNCTIONS[h.fn].icon + ' ' + FUNCTIONS[h.fn].name + '</span>'
+      + '<span class="history-badge" style="background:rgba(255,255,255,.05);color:var(--text-muted)">' + h.style + '</span>'
+      + '<span class="history-time">' + h.time + fb + '</span>'
+      + '</div>'
+      + '<div class="history-query">' + escHtml(h.query) + '</div>'
+      + '<div class="history-response">' + escHtml(h.response) + '</div>'
+      + '</div>';
+  }).join('');
+}
+
+function escHtml(str) {
+  var d = document.createElement('div');
+  d.textContent = str;
+  return d.innerHTML;
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 3200);
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.target.classList.contains('fn-card') && (e.key === 'Enter' || e.key === ' ')) {
+    e.preventDefault(); e.target.click();
+  }
+});
+
+window.addEventListener('DOMContentLoaded', function() {
+  updateStats();
+  selectFunction('qa');
+});
+</script>
+</body>
+</html>

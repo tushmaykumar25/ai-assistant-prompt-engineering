@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.elc
+.ipynb_checkpoints/
+.pytest_cache/
+.venv
+venv/
+ENV/
+env/
+
+# Flask/Flask-Session
+feedback_log.txt
+.webassets-cache
+
+# OS
+.DS_Store
+Thumbs.db

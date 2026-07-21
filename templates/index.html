@@ -713,6 +713,18 @@ function showToast(msg) {
 
 window.addEventListener('DOMContentLoaded', function(){
   updateStats(); selectFunction('qa');
+  /* Check if API key is preconfigured on the server side */
+  fetch('/check-key')
+  .then(function(r){return r.json();})
+  .then(function(d){
+    if (d.has_key) {
+      var el = document.getElementById('key-status');
+      el.textContent = 'Key Active (Server)';
+      el.className = 'key-status set';
+      document.getElementById('api-key-input').placeholder = '••••••••••••••••••••';
+    }
+  })
+  .catch(function(){});
 });
 </script>
 </body>

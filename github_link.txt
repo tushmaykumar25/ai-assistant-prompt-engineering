@@ -1,0 +1,10 @@
+PROJECT SUBMISSION DETAILS
+
+Project Name: NovaMind AI Assistant (Prompt Engineering Major Project)
+Developer: Lavina Kanwar
+
+GitHub Repository Link:
+https://github.com/tushmaykumar25/ai-assistant-prompt-engineering
+
+---
+Note: The repository contains a full-stack Flask application demonstrating 12 prompt engineering styles across 4 functions (Q&A, Summarizer, Creative Writer, Advisor), a server-side feedback loop, and a sandbox/demo mode for keyless evaluation.

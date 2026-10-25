@@ -6,7 +6,7 @@ Developed as a major internship project, this assistant implements 4 distinct co
 
 ---
 
-## 🚀 Key Features
+## Key Features
 
 *   **12 Core Prompt Variations**: Demonstrates structured prompt engineering across 4 critical domains (Factual Q&A, Summarization, Creative Writing, and Smart Advice).
 *   **Flask Python Backend**: Fully decoupled architecture where all prompt compilation and LLM API calls are executed securely server-side.
@@ -17,7 +17,7 @@ Developed as a major internship project, this assistant implements 4 distinct co
 
 ---
 
-## ⚙️ Architecture & Tech Stack
+## Architecture & Tech Stack
 
 *   **Frontend**: HTML5, Vanilla CSS3 (Custom Design Tokens), ES6 JavaScript (Fetch API, SpeechSynthesis, Clipboard API).
 *   **Backend**: Flask (Python 3), `requests` for Google Generative AI REST API interface.
@@ -25,26 +25,26 @@ Developed as a major internship project, this assistant implements 4 distinct co
 
 ---
 
-## 🎨 Prompt Engineering Design System
+## Prompt Engineering Design System
 
 | Function | Style | Prompt Design Strategy | Goal |
 |---|---|---|---|
-| **🔍 Factual Q&A** | `Simple` | Direct request. Zero-shot context. | Quick, high-level answers. |
+| ** Factual Q&A** | `Simple` | Direct request. Zero-shot context. | Quick, high-level answers. |
 | | `Detailed` | Request with explicit structure (Direct, Explanation, Example). | Step-by-step clarity. |
 | | `Expert` | Roleplay framing ("Knowledgeable Expert"), instruction to cover trade-offs and address misconceptions. | Academic-grade depth. |
-| **📄 Text Summarizer** | `Simple` | Sentence constraint (2-3 sentences), simple vocabulary instruction. | TL;DR / Executive summary. |
+| ** Text Summarizer** | `Simple` | Sentence constraint (2-3 sentences), simple vocabulary instruction. | TL;DR / Executive summary. |
 | | `Detailed` | Markdown structure constraint (Topic, Key Points, Takeaway). | Skimmable notes. |
 | | `Expert` | Analytical synthesis (Thesis, Evidence, Assumptions, Implications, Gaps). | Academic text analysis. |
-| **✍️ Creative Writer** | `Simple` | Open-ended prompt, high model temperature. | Creative freedom. |
+| ** Creative Writer** | `Simple` | Open-ended prompt, high model temperature. | Creative freedom. |
 | | `Detailed` | Structural & length constraints (Vivid tone, 150-250 words, plot progression). | Structured storytelling. |
 | | `Expert` | High-fidelity stylistic constraints (Metaphors, imagery, character depth, thematic coherence). | Sophisticated creative writing. |
-| **💡 Smart Advisor** | `Simple` | Conversational, direct suggestion request. | Everyday tips. |
+| ** Smart Advisor** | `Simple` | Conversational, direct suggestion request. | Everyday tips. |
 | | `Detailed` | Step-by-step playbook formatting (Overview, 5+ steps, mistakes to avoid, takeaway tip). | Actionable plan. |
 | | `Expert` | Evidence-based reasoning, consideration of constraints, trade-offs, and multi-scenario logic. | Strategic advising. |
 
 ---
 
-## 🛠️ Installation & Running Locally
+## Installation & Running Locally
 
 ### Prerequisites
 - Python 3.8+
@@ -73,7 +73,7 @@ Developed as a major internship project, this assistant implements 4 distinct co
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
 ```text
 ├── app.py                  # Flask Application Server (routes, session-key handling, API client)
@@ -89,7 +89,7 @@ Developed as a major internship project, this assistant implements 4 distinct co
 
 ---
 
-## 📈 Production Deployment
+## Production Deployment
 This application is configured for direct deployment to platforms like **Render**, **Heroku**, or **PythonAnywhere**.
 - **Build Command**: None (Python standard runtime environment)
 - **Start Command**: `gunicorn app:app` (defined in the `Procfile`)
